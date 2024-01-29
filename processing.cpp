@@ -1,7 +1,30 @@
-#include <iostream>
-#include <map>
+#include "processing.h"
 
-using namespace std;
+int main()
+{
+    char *fen;
+    printf("Enter FEN code: ");
+    scanf("%[^\n]", fen);
+    cout << "\n"
+         << fen;
+    printf("\n");
+
+    array<array<int, 64>, 12> board_white = fen_to_piece_board(fen);
+
+    // order is my p, n, b, r, q, k, then their reverse
+    for (int i = 0; i < 12; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            for (int k = 0; k < 8; k++)
+            {
+                cout << board_white[i][j * 8 + k] << " ";
+            }
+            cout << "\n";
+        }
+        cout << "\n\n";
+    }
+}
 
 array<array<int, 64>, 12> fen_to_piece_board(char *fen)
 {
@@ -75,30 +98,4 @@ array<array<int, 64>, 12> fen_to_piece_board(char *fen)
     }
 
     return output;
-}
-
-int main()
-{
-    char *fen;
-    printf("Enter FEN code: ");
-    scanf("%[^\n]", fen);
-    cout << "\n"
-         << fen;
-    printf("\n");
-
-    array<array<int, 64>, 12> board_white = fen_to_piece_board(fen);
-
-    // order is my p, n, b, r, q, k, then their reverse
-    for (int i = 0; i < 12; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            for (int k = 0; k < 8; k++)
-            {
-                cout << board_white[i][j * 8 + k] << " ";
-            }
-            cout << "\n";
-        }
-        cout << "\n\n";
-    }
 }
