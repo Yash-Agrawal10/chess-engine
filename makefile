@@ -1,10 +1,13 @@
 CXX      = g++
 CXXFLAGS = -std=c++17
 
-all: main
+all: main processing
 
 main: main.cpp eval.cpp search.cpp game.cpp
 	${CXX} ${CXXFLAGS} $^ -o $@
 
+processing: processing.cpp
+	${CXX} ${CXXFLAGS} $^ -o $@
+
 clean: 
-	${RM} main a.out *.o *dSYM
+	${RM} main processing a.out *.o *dSYM
