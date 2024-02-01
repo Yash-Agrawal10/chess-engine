@@ -1,5 +1,6 @@
 .DS_Store
 .vscode/
+nn-eval/__pycache__/*
 
 # Prerequisites
 *.d
