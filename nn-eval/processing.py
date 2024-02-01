@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 piecemap = {
     'K': 0, 'N': 1, 'B': 2, 'R': 3, 'Q': 4, 'P': 5,
@@ -35,24 +36,14 @@ def fen_to_worldviews(fen: str):
             their_worldview[piece_index][curr_square] = 1
             curr_col += 1
 
-    # flip worldview based on to_move
+    # flip worldview based on to_move (currently ignored, white is my_worldview)
     if white_to_move:
         their_worldview = np.flip(their_worldview)
     else:
         my_worldview = np.flip(my_worldview)
 
     # return
-    return [my_worldview, their_worldview]
-
-def print_worldview(worldview):
-    # print out worldview
-    for key in piecemap:
-        index = piecemap[key]
-        pieceboard = worldview[index]
-        pieceboard = np.reshape(pieceboard, (8, 8))
-        print(key, index)
-        print(pieceboard)
-        print("\n")
+    return [my_worldview, their_worldview, white_to_move]
 
 def worldviews_to_halfkp(my_worldview, their_worldview):
     # converts worldviews (where own king is index 0, their king is index 11)
@@ -69,17 +60,39 @@ def worldviews_to_halfkp(my_worldview, their_worldview):
     their_others = np.concatenate(their_others)
     
     my_product = np.outer(my_king, my_others).flatten()
-    print(np.shape(my_king), np.shape(my_others), np.shape(my_product))
     their_product = np.outer(their_king, their_others).flatten()
 
     halfkp = np.concatenate([my_product, their_product])
+    halfkp = halfkp.astype(np.single)
     return halfkp
 
-def fen_to_halfkp(fen: str):
-    my_worldview, their_worldview = fen_to_worldviews(fen)
-    halfkp = worldviews_to_halfkp(my_worldview, their_worldview)
-    return halfkp
+def normalize_eval(eval: int, white_to_move: bool):
+    # normalize eval to [0, 1]
+    if not(white_to_move):
+        eval = eval * -1
+    if eval < -15:
+        bounded_eval = -15
+    elif eval > 15:
+        bounded_eval = 15
+    else:
+        bounded_eval = eval
+    normalized_eval = (bounded_eval + 15)/30
+    return normalized_eval
 
-fen = input("Enter FEN: ")
-halfkp = fen_to_halfkp(fen)
-print(np.shape(halfkp))
+def denormalize_eval(eval: int, white_to_move: bool):
+    # denormalize eval from [0, 1]
+    denormalize_eval = eval * 30 - 15
+    if not(white_to_move):
+        denormalize_eval = denormalize_eval * -1
+    return denormalize_eval
+
+def process_row(row):
+    # process a row of the dataframe
+    fen = row["fen"]
+    stockfish_eval = row["eval"]
+    my_worldview, their_worldview, white_to_move = fen_to_worldviews(fen)
+    row["halfkp"] = worldviews_to_halfkp(my_worldview, their_worldview)
+    row["white_to_move"] = white_to_move
+    normalized_eval = normalize_eval(stockfish_eval, white_to_move)
+    row["normalized_eval"] = np.array([normalized_eval], dtype=np.single)
+    return row
