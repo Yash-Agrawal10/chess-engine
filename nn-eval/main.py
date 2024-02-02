@@ -4,12 +4,9 @@ from Model import EvalNN
 import torch
 from torch.utils.data import DataLoader, random_split
 
-# import numpy as np
-# import matplotlib.pyplot as plt
-
 # Initialize Dataset
 sqlpath = "/Users/User/sqlite/chess-evals.db"
-lower, upper = 1, 100000
+lower, upper = 300000, 500000
 k = 10   # must divide 1 evenly as a decimal
 full_dataset = EvalDataset(sqlpath, lower, upper)
 datasets = random_split(full_dataset, [1/k] * k)
@@ -25,7 +22,7 @@ print("Initialized DataLoaders")
 
 # Define and Load Model
 model = EvalNN()
-# model.load_state_dict(torch.load("./eval-nn.pt"))
+model.load_state_dict(torch.load("./eval-nn.pt"))
 print("Initialized Model")
 
 # Train Model
@@ -49,8 +46,9 @@ df = df.apply(processing.process_row, axis=1)
 for index in df.index:
     fen = df.at[index, "fen"]
     stockfish_eval = df.at[index, "eval"]
-    halfkp = df.at[index, "halfkp"]
+    mine = torch.tensor([df.at[index, "mine"]])
+    theirs = torch.tensor([df.at[index, "theirs"]])
     white_to_move = df.at[index, "white_to_move"]
-    engine_eval = model(torch.tensor(halfkp)).item()
-    engine_eval = processing.denormalize_eval(engine_eval, white_to_move)
+    engine_output = model.forward(mine, theirs).item()
+    engine_eval = processing.denormalize_eval(engine_output, white_to_move)
     print(stockfish_eval, engine_eval)
