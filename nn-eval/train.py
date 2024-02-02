@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, random_split
 
 # Initialize Dataset
 sqlpath = "/Users/User/sqlite/chess-evals.db"
-lower, upper = 100000, 200000 # trained up to 200000
+lower, upper = 100000, 500000 # trained up to 200000
 k = 10   # must divide 1 evenly as a decimal
 full_dataset = EvalDataset(sqlpath, lower, upper)
 datasets = random_split(full_dataset, [1/k] * k)
@@ -26,8 +26,11 @@ model = torch.load("eval-nn.pt")
 print("Initialized Model")
 
 # Train Model
-for dataloader in train_dls:
-    model.train(dataloader, 30)
+for i in range(len(train_dls)):
+    for j in range(len(train_dls)):
+        if i != j:
+            model.train(train_dls[j], 30)
+    model.evaluate(train_dls[i])
 
 # Evaluate Model
 model.evaluate(test_dl)

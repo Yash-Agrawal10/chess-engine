@@ -42,7 +42,7 @@ class EvalNN(nn.Module):
                 total_loss += loss.item()
                 loss.backward()
                 self.optimizer.step()
-            print(epoch, total_loss / len(dataloader))
+            print("Epoch: ", epoch, "Loss: ", total_loss / len(dataloader))
 
     def evaluate(self, dataloader):
         total_loss = 0
