@@ -8,13 +8,13 @@ import processing
 
 # Define and Load Model
 model = EvalNN()
-model.load_state_dict(torch.load("./eval-nn.pt"))
+model = torch.load("eval-nn.pt")
 print("Initialized Model")
 
 # Initialize Dataset
 sqlpath = "/Users/User/sqlite/chess-evals.db"
 con = sqlite3.connect(sqlpath)
-query = "select fen, eval from evaluations limit 10 offset 10000000;"
+query = "select fen, eval from evaluations limit 100 offset 10000000;"
 df = pd.read_sql(query, con)
 df = df.apply(processing.process_row, axis=1)
 

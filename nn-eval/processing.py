@@ -65,7 +65,8 @@ def worldviews_to_halfkp(my_worldview, their_worldview):
     return [my_product, their_product]
 
 def normalize_eval(eval: int, white_to_move: bool):
-    # normalize eval to [0, 1]
+    # flip eval if black to move
+    # and bound eval to [-15, 15]
     if not(white_to_move):
         eval = eval * -1
     if eval < -15:
@@ -74,15 +75,13 @@ def normalize_eval(eval: int, white_to_move: bool):
         bounded_eval = 15
     else:
         bounded_eval = eval
-    normalized_eval = (bounded_eval + 15)/30
-    return normalized_eval
+    return bounded_eval
 
 def denormalize_eval(eval: int, white_to_move: bool):
-    # denormalize eval from [0, 1]
-    denormalize_eval = eval * 30 - 15
+    # flip eval if black to move
     if not(white_to_move):
-        denormalize_eval = denormalize_eval * -1
-    return denormalize_eval
+        eval = eval * -1
+    return eval
 
 def process_row(row):
     # process a row of the dataframe
