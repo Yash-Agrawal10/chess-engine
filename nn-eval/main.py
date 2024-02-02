@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, random_split
 
 # Initialize Dataset
 sqlpath = "/Users/User/sqlite/chess-evals.db"
-lower, upper = 200000, 300000
+lower, upper = 1, 100000
 k = 10   # must divide 1 evenly as a decimal
 full_dataset = EvalDataset(sqlpath, lower, upper)
 datasets = random_split(full_dataset, [1/k] * k)

@@ -59,12 +59,10 @@ def worldviews_to_halfkp(my_worldview, their_worldview):
     my_others = np.concatenate(my_others)
     their_others = np.concatenate(their_others)
     
-    my_product = np.outer(my_king, my_others).flatten()
-    their_product = np.outer(their_king, their_others).flatten()
+    my_product = np.outer(my_king, my_others).flatten().astype(np.single)
+    their_product = np.outer(their_king, their_others).flatten().astype(np.single)
 
-    halfkp = np.concatenate([my_product, their_product])
-    halfkp = halfkp.astype(np.single)
-    return halfkp
+    return [my_product, their_product]
 
 def normalize_eval(eval: int, white_to_move: bool):
     # normalize eval to [0, 1]
@@ -91,7 +89,9 @@ def process_row(row):
     fen = row["fen"]
     stockfish_eval = row["eval"]
     my_worldview, their_worldview, white_to_move = fen_to_worldviews(fen)
-    row["halfkp"] = worldviews_to_halfkp(my_worldview, their_worldview)
+    mine, theirs = worldviews_to_halfkp(my_worldview, their_worldview)
+    row["mine"] = mine
+    row["theirs"] = theirs
     row["white_to_move"] = white_to_move
     normalized_eval = normalize_eval(stockfish_eval, white_to_move)
     row["normalized_eval"] = np.array([normalized_eval], dtype=np.single)

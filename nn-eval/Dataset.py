@@ -11,13 +11,16 @@ class EvalDataset(Dataset):
         query = "select fen, eval from evaluations where id between " + str(lower) + " and " + str(upper) + ";"
         df = pd.read_sql(query, con)
         df = df.apply(processing.process_row, axis=1)
-        self.X = df["halfkp"]
+        self.mine = df["mine"]
+        self.theirs = df["theirs"]
+        assert(self.mine.size == self.theirs.size)
         self.Y = df["normalized_eval"]
 
     def __len__(self):
-        return self.X.size
+        return self.mine.size
     
     def __getitem__(self, idx):
-        halfkp = self.X.at[idx]
+        mine = self.mine.at[idx]
+        theirs = self.theirs.at[idx]
         eval = self.Y.at[idx]
-        return [halfkp, eval]
+        return [mine, theirs, eval]
