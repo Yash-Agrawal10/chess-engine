@@ -6,7 +6,8 @@ piecemap = {
 }
 
 def fen_to_worldviews(fen: str):
-    # convert FEN string to my / their worldviews
+    # convert FEN string to [my_worldview, their_worldview, white_to_move]
+    # piece order in worldviews based on global piecemap
 
     # initialize variables
     my_worldview = np.zeros((12, 64))
