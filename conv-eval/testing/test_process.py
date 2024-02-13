@@ -54,16 +54,20 @@ def test_starting_position():
     # expected output
     expected = start
     # actual output
-    actual = process.fen_to_piecemaps("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") 
+    actual, white_to_move = process.fen_to_pieceboards("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") 
     # compare
     errors = compare_pieceboards(expected, actual)
+    if not white_to_move:
+        errors.append("error in white_to_move")
     assert not errors, "errors occured:\n{}".format("\n".join(errors))
 
 def test_e4():
     # expected output
     expected = e4
     # actual output
-    actual = process.fen_to_piecemaps("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
+    actual, white_to_move = process.fen_to_pieceboards("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
     # compare
     errors = compare_pieceboards(expected, actual)
+    if white_to_move:
+        errors.append("error in white_to_move")
     assert not errors, "errors occured:\n{}".format("\n".join(errors))
