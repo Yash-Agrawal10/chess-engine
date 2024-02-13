@@ -75,7 +75,8 @@ def normalize_eval(eval: int, white_to_move: bool):
         bounded_eval = 15
     else:
         bounded_eval = eval
-    return bounded_eval
+    # return bounded_eval, not eval
+    return eval
 
 def denormalize_eval(eval: int, white_to_move: bool):
     # flip eval if black to move

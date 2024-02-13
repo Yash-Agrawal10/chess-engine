@@ -29,7 +29,7 @@ print("Initialized Model")
 for i in range(len(train_dls)):
     for j in range(len(train_dls)):
         if i != j:
-            print("Training on ", j, "Evaluating on ", i)
+            print(f'Training on {j}, Evaluating on {i}', j, i)
             model.train(train_dls[j], 30)
     model.evaluate(train_dls[i])
 

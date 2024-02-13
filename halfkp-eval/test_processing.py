@@ -89,3 +89,6 @@ def test_fen_to_worldviews():
             errors.append("error in starting side to move")
 
         assert not errors, "errors occured:\n{}".format("\n".join(errors))
+
+def test_worldviews_to_halfkp():
+      pass
