@@ -18,6 +18,7 @@ start[8][0] = start[8][7] = 1
 start[9][2] = start[9][5] = 1
 start[10][1] = start[10][6] = 1
 start[11][4] = 1
+start = start.flatten()
 
 e4 = np.zeros((12, 64))
 e4[0][59] = 1
@@ -32,6 +33,7 @@ e4[8][0] = e4[8][7] = 1
 e4[9][2] = e4[9][5] = 1
 e4[10][1] = e4[10][6] = 1
 e4[11][3] = 1
+e4 = e4.flatten()
 
 # Helper Functions
 

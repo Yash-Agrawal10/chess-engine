@@ -1,4 +1,7 @@
 import numpy as np
+import pandas as pd
+import warnings
+warnings.filterwarnings('ignore')
 
 # capital is my pieces, lowercase is their pieces
 piecemap = {
@@ -40,6 +43,7 @@ def fen_to_pieceboards(fen: str):
         pieceboards = np.flip(pieceboards)
 
     # return
+    pieceboards = pieceboards.flatten()
     return [pieceboards, white_to_move]
 
 def normalize_eval(eval: int, white_to_move: bool) -> float:
@@ -56,13 +60,42 @@ def denormalize_eval(normalized_eval: float, white_to_move: bool) -> int:
         eval *= -1
     return eval
 
+def process_eval(eval:str, white_to_move:bool):
+    # process eval from chessData.csv
+
+    # catch checkmate evals
+    if eval[0] == '#':
+        if eval[1] == '-':
+            eval = '-10000'
+        elif eval[1] == '+':
+            eval = '+10000'
+        else:
+            return None
+    # ensure eval is numeric
+    if eval.strip('+').isnumeric() or eval.strip('-').isnumeric():
+        eval = int(eval)
+    else:
+        return None
+    # normalize eval
+    eval = normalize_eval(eval, white_to_move)
+    # return
+    return eval
+
 def process_row(row):
     # convert FEN string to pieceboards
-    fen = row["fen"]
+    fen = row["FEN"]
     pieceboards, white_to_move = fen_to_pieceboards(fen)
-    pieceboards = pieceboards.flatten()
     # normalize eval
-    eval = row["eval"]
-    normalized_eval = normalize_eval(eval, white_to_move)
+    eval = row["Evaluation"]
+    processed_eval = process_eval(eval, white_to_move)
     # return
-    return {"pieceboards": pieceboards, "normalized_eval": normalized_eval}
+    row["pieceboards"] = pieceboards.astype(np.float32)
+    row["eval"] = np.array(processed_eval, dtype=np.float32)
+    return row
+
+def csv_to_pickle(csv_path: str, pickle_path, count: int):
+    # convert csv to json
+    df = pd.read_csv(csv_path, nrows=count)
+    df = df.apply(process_row, axis=1)
+    df = df.dropna()
+    df.to_pickle(pickle_path)

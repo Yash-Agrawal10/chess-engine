@@ -1,14 +1,26 @@
 from Dataset import EvalDataset
 from Model import EvalNN
-
 import torch
 from torch.utils.data import DataLoader, random_split
+import warnings
+warnings.filterwarnings('ignore')
+import os
+import process
+
+# Create pickle file if not found
+path = "data/chessData.pkl"
+if not os.path.exists(path):
+    print("csv to pickle not found")
+    print("converting csv to pickle")
+    csv_path = "data/chessData.csv"
+    pickle_path = "data/chessData.pkl"
+    count = 1000000
+    process.csv_to_pickle(csv_path, pickle_path, count)
+    print("csv to pickle complete")
 
 # Initialize Dataset
-sqlpath = "/Users/User/sqlite/chess-evals.db"
-lower, upper = 200000, 300000
-k = 10   # must divide 1 evenly as a decimal
-full_dataset = EvalDataset(sqlpath, lower, upper)
+k = 5   # must divide 1 evenly as a decimal
+full_dataset = EvalDataset(path)
 datasets = random_split(full_dataset, [1/k] * k)
 print("Initialized Datasets")
 
@@ -20,16 +32,16 @@ for dataset in datasets:
 test_dl = train_dls.pop()
 print("Initialized DataLoaders")
 
-# Define and Load Model
+# Define / Load Model
 model = EvalNN()
-#model = torch.load("eval-nn.pt")
+# model = torch.load("eval-nn.pt")
 print("Initialized Model")
 
 # Train Model
 for i in range(len(train_dls)):
     for j in range(len(train_dls)):
         if i != j:
-            print(f'Training on {j}, Evaluating on {i}', j, i)
+            print(f'Training on {j}, Evaluating on {i}')
             model.train(train_dls[j], 30)
     model.evaluate(train_dls[i])
 
@@ -37,4 +49,4 @@ for i in range(len(train_dls)):
 model.evaluate(test_dl)
 
 # Save Model
-torch.save(model, "eval-nn.pt")
+# torch.save(model, "eval-nn.pt")
